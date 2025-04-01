@@ -1,9 +1,10 @@
-#ifndef FILOSOFERS.H
- #define FILOSOFERS.H
+#ifndef FILOSOFERS_H
+ #define FILOSOFERS_H
     #include <stdio.h>
     #include <pthread.h>
     #include <sys/time.h>
     #include <unistd.h>
+    #include <stdlib.h>
     typedef struct timeval t_timeval;
     
     typedef struct s_filo{
@@ -12,14 +13,13 @@
         long    time_of_last_meel;
         pthread_mutex_t  *left_fork;
         pthread_mutex_t  *rigth_fork;
-        pthread_mutex_t  look;
+        pthread_mutex_t  lock;
         pthread_mutex_t  meel;
-        int             meels;
         pthread_t    tread;
-        struct  *t_table table;
+        struct  t_table *table;
         int remover_depois;
-}
-    t_filo;
+        // struct s_table	table;
+    }t_filo;
     typedef struct s_table
     {
         int             fil_num;

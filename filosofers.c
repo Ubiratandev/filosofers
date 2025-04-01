@@ -1,5 +1,57 @@
 #include "filosofers.h"
 
+int	ft_atoi(const char *nptr)
+{
+	int	i;
+	int	num;
+	int	op;
+
+	i = 0;
+	num = 0;
+	op = 1;
+	while (nptr[i] == ' ' || nptr[i] == '\n' || nptr[i] == '\t'
+		|| nptr[i] == '\v' || nptr[i] == '\r' || nptr[i] == '\f')
+		i++;
+	if (nptr[i] == '-' || nptr[i] == '+')
+	{
+		if (nptr[i] == '-')
+			op *= -1;
+		i++;
+	}
+	while (nptr[i] >= 48 && nptr[i] <= 57)
+	{
+		num = num * 10 + (nptr[i] - 48);
+		i++;
+	}
+	return (num * op);
+}
+
+long	ft_atol(const char *nptr)
+{
+	int		i;
+	long	num;
+	long	op;
+
+	i = 0;
+	num = 0;
+	op = 1;
+	while (nptr[i] == ' ' || nptr[i] == '\n' || nptr[i] == '\t'
+		|| nptr[i] == '\v' || nptr[i] == '\r' || nptr[i] == '\f')
+		i++;
+	if (nptr[i] == '-' || nptr[i] == '+')
+	{
+		if (nptr[i] == '-')
+			op *= -1;
+		i++;
+	}
+	while (nptr[i] >= 48 && nptr[i] <= 57)
+	{
+		num = num * 10 + (nptr[i] - 48);
+		i++;
+	}
+	return (num * op);
+}
+
 int ft_is_digit(char *num)
 {
     int i;
@@ -29,7 +81,7 @@ int verify_args(char *argv[])
     }
     return(1);
 }
-int verify_num_arg(t_table table, int argc)
+int verify_num_arg(t_table table, char  *argv[], int argc)
 {
     if(table.fil_num < 0)
         return(0);
@@ -44,49 +96,49 @@ int verify_num_arg(t_table table, int argc)
             return(0);
     return(1);
 }
-void    populate(t_filo filo,t_table table, ing argc)
+void    populate(t_filo filo,t_table table, char *argv[],int argc)
 {
     if(verify_args(argv) == 0)
-        return(1);
+        return;
     table.fil_num = ft_atoi(argv[1]);
     table.time_to_die = ft_atol(argv[2]);
     table.time_to_eat = ft_atol(argv[3]);
-    table.time_to_sleep = ft_atol(argv[4])
+    table.time_to_sleep = ft_atol(argv[4]);
     table.max_number_of_eat = -42;
     if(argc = 6)
         table.max_number_of_eat[argv[5]];
-    table.fork = malloc(table.fil_num * sizeof pthread_mutex_t);
-    table.filo = malloc(table.fil_num * sizeof t_filo);
+    table.fork = malloc(table.fil_num * sizeof(pthread_mutex_t));
+    table.filo = malloc(table.fil_num * sizeof(t_filo));
 }
 //todo criar a função que checa os maloc da table
-void    init_mutex(t_table table,int num_of_fill)
+void    init_mutex(t_table *table,int num_of_fill)
 {
     int i;
 
-    i = 0
+    i = 0;
     while(i < num_of_fill)
-        pthread_mutex_init(table.fork[i],NULL);
+        pthread_mutex_init(&table->fork[i],NULL);
     //verificar a alocação de memoria
-    pthread_mutex_init(table.print, NULL);
-    pthread_mutex_init(table.dead, NULL);
-    pthread_mutex_init(table.wait_fil_pair_eat, NULL);
+    pthread_mutex_init(&table->print, NULL);
+    pthread_mutex_init(&table->dead, NULL);
+    pthread_mutex_init(&table->wait_fil_pair_eat, NULL);
 }
-void    initialize_fills(int num_of_fill, t_filo filo, t_table table)
+void    initialize_fills(int num_of_fill, t_filo filo, t_table *table)
 {
     int i;
 
     i = 0;
     //charmar a função que inicializa os mutex
-    init_mutex(table,num_of_fill)
+    init_mutex(table,num_of_fill);
     while(i <= num_of_fill)
     {
         filo.id = i;
         filo.meels = 0;
-        filo.left_fork = table.fork[i];
-        filo.rigth_fork = table.fork[(i + 1) % num_of_fill];
-        filo.table = table;
-        pthread_mutex_init(filo.meel, NULL);
-        pthread_mutex_init(filo.look, NULL);
+        filo.left_fork = &table->fork[i];
+        filo.rigth_fork = &table->fork[(i + 1) % num_of_fill];
+        filo->table = table;
+        pthread_mutex_init(&filo.meel, NULL);
+        pthread_mutex_init(&filo.lock, NULL);
     }
 }
 void    count_at_100(void *ptr)
@@ -99,9 +151,9 @@ void    count_at_100(void *ptr)
     i = 0;
     while(i <= 10)
     {
-        filo.remover_depois = i;
+        filo->remover_depois = i;
         i++;
-        printf("%d", filo.remover_depois);
+        printf("%d", filo->remover_depois);
     }
 }
 void    tread_init(t_table *table)
@@ -109,18 +161,18 @@ void    tread_init(t_table *table)
     int i;
 
     i = 0;
-    while(i < table.fil_num)
+    while(i < table->fil_num)
     {
        pthread_mutex_lock(&table->filo[i].lock);
-       table->filo[i].time_if_last_meel = table.time_start;
+       table->filo[i].time_of_last_meel = table->time_start;
        pthread_mutex_unlock(&table->filo[i].lock);
-       pthread_create(table->filo[i].thread, NULL, count_at_100, &table->filo[i]);
+       pthread_create(table->filo[i].tread, NULL, count_at_100, &table->filo[i]);
         i++;
     }
     i = 0;
-    while(i < table.fil_num)
+    while(i < table->fil_num)
     {
-        pthread_join(table->filo[i].thread, NULL);
+        pthread_join(table->filo[i].tread, NULL);
         i++;
     }
 }
@@ -135,7 +187,7 @@ int main(int argc, char *argv[])
         return(1);
     populate(filo,table,argc);
     //ver se todos sao positivos
-    if(verify_num_arg(t_filo filo, argc) == 0)
+    if(verify_num_arg(t_filo filo, argv, argc) == 0)
         return(1);
     num_of_fill = table.fill_num;
     //instanciar os filosofos em uma lista circular ou não
