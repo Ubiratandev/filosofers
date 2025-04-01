@@ -16,9 +16,9 @@
         pthread_mutex_t  lock;
         pthread_mutex_t  meel;
         pthread_t    tread;
-        struct  t_table *table;
+        // struct  t_table *table;
         int remover_depois;
-        // struct s_table	table;
+        struct s_table	*table;
     }t_filo;
     typedef struct s_table
     {

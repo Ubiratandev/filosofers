@@ -66,6 +66,7 @@ int ft_is_digit(char *num)
     }
     return(1);
 }
+
 int verify_args(char *argv[])
 {
     int i;
@@ -81,6 +82,7 @@ int verify_args(char *argv[])
     }
     return(1);
 }
+
 int verify_num_arg(t_table table, char  *argv[], int argc)
 {
     if(table.fil_num < 0)
@@ -96,21 +98,24 @@ int verify_num_arg(t_table table, char  *argv[], int argc)
             return(0);
     return(1);
 }
-void    populate(t_filo filo,t_table table, char *argv[],int argc)
+
+void    populate(t_filo *filo,t_table *table, char *argv[],int argc)
 {
-    if(verify_args(argv) == 0)
+    if(verify_args(argv) == 1)
+    {
         return;
-    table.fil_num = ft_atoi(argv[1]);
-    table.time_to_die = ft_atol(argv[2]);
-    table.time_to_eat = ft_atol(argv[3]);
-    table.time_to_sleep = ft_atol(argv[4]);
-    table.max_number_of_eat = -42;
+    }
+    table->fil_num = ft_atoi(argv[1]);
+    table->time_to_die = ft_atol(argv[2]);
+    table->time_to_eat = ft_atol(argv[3]);
+    table->time_to_sleep = ft_atol(argv[4]);
+    table->max_number_of_eat = -42;
     if(argc = 6)
-        table.max_number_of_eat[argv[5]];
-    table.fork = malloc(table.fil_num * sizeof(pthread_mutex_t));
-    table.filo = malloc(table.fil_num * sizeof(t_filo));
+        table->max_number_of_eat[argv[5]];
+    table->fork = malloc(table->fil_num * sizeof(pthread_mutex_t));
+    table->filo = malloc(table->fil_num * sizeof(t_filo));
 }
-//todo criar a função que checa os maloc da table
+
 void    init_mutex(t_table *table,int num_of_fill)
 {
     int i;
@@ -118,30 +123,30 @@ void    init_mutex(t_table *table,int num_of_fill)
     i = 0;
     while(i < num_of_fill)
         pthread_mutex_init(&table->fork[i],NULL);
-    //verificar a alocação de memoria
     pthread_mutex_init(&table->print, NULL);
     pthread_mutex_init(&table->dead, NULL);
     pthread_mutex_init(&table->wait_fil_pair_eat, NULL);
 }
-void    initialize_fills(int num_of_fill, t_filo filo, t_table *table)
+
+void    initialize_fills(int num_of_fill, t_filo *filo, t_table *table)
 {
     int i;
 
     i = 0;
-    //charmar a função que inicializa os mutex
     init_mutex(table,num_of_fill);
     while(i <= num_of_fill)
     {
-        filo.id = i;
-        filo.meels = 0;
-        filo.left_fork = &table->fork[i];
-        filo.rigth_fork = &table->fork[(i + 1) % num_of_fill];
-        filo->table = table;
-        pthread_mutex_init(&filo.meel, NULL);
-        pthread_mutex_init(&filo.lock, NULL);
+        filo[i].id = i;
+        filo[i].meels = 0;
+        filo[i].left_fork = &table->fork[i];
+        filo[i].rigth_fork = &table->fork[(i + 1) % num_of_fill];
+        filo[i].table = table;
+        pthread_mutex_init(&table->filo[i].meel, NULL);
+        pthread_mutex_init(&table->filo[i].lock, NULL);
     }
 }
-void    count_at_100(void *ptr)
+
+void    *count_at_100(void *ptr)
 {
     t_filo *filo;
 
@@ -153,20 +158,23 @@ void    count_at_100(void *ptr)
     {
         filo->remover_depois = i;
         i++;
-        printf("%d", filo->remover_depois);
+        printf("%d \n", filo->remover_depois);
     }
 }
-void    tread_init(t_table *table)
+
+void    tread_init(t_table *table, char *argv[], int argc)
 {
     int i;
 
     i = 0;
+    populate(table->filo,table, argv,argc);
     while(i < table->fil_num)
     {
-       pthread_mutex_lock(&table->filo[i].lock);
-       table->filo[i].time_of_last_meel = table->time_start;
-       pthread_mutex_unlock(&table->filo[i].lock);
-       pthread_create(table->filo[i].tread, NULL, count_at_100, &table->filo[i]);
+    
+    //    pthread_mutex_lock(&table->filo[i].lock);
+    //    table->filo[i].time_of_last_meel = table->time_start;
+    //    pthread_mutex_unlock(&table->filo[i].lock);
+       pthread_create(&table->filo[i].tread, NULL, count_at_100, &table->filo[i]);
         i++;
     }
     i = 0;
@@ -176,24 +184,17 @@ void    tread_init(t_table *table)
         i++;
     }
 }
+
 int main(int argc, char *argv[])
 {
-    //receber 4 parametros
     t_filo filo;
     t_table table;
-    int num_of_fill;
 
+    table.filo = &filo;
+    int num_of_fill;
     if(argc < 5 && argc > 6 )
         return(1);
-    populate(filo,table,argc);
-    //ver se todos sao positivos
-    if(verify_num_arg(t_filo filo, argv, argc) == 0)
+    if(verify_num_arg(table, argv, argc) == 0)
         return(1);
-    num_of_fill = table.fill_num;
-    //instanciar os filosofos em uma lista circular ou não
-    //converter para medida de tempo correta de nanosegundos para microsegundos sys/time.h get_time_of_days
-    //inciar as treads atribuir id, ultima_refeição, 
-    //a mesa tem a quanto tempo a simulaãp começou e uma tread para monitorar se os filosofos estao vivod
-    //criar as 4 funcloes pensar dormir comer e monitorar a vida
-
-}
+    tread_init(&table, argv, argc);
+ }
