@@ -20,6 +20,7 @@
         int remover_depois;
         struct s_table	*table;
     }t_filo;
+    
     typedef struct s_table
     {
         int             fil_num;
@@ -33,7 +34,27 @@
         pthread_mutex_t  dead;
         pthread_mutex_t  wait_fil_pair_eat;
         pthread_t  monitor;
+        int valid_table;
         t_filo          *filo;
     }t_table;
+    int	ft_atoi(const char *nptr);
+    long	ft_atol(const char *nptr);
+    int ft_is_digit(char *num);
+    int verify_args(char *argv[]);
+    int verify_num_arg(t_table table, char  *argv[], int argc);
+    void    populate(t_table *table, char *argv[],int argc);
+    void    *count_at_100(void *ptr);
+    void    tread_init(t_table *table, char *argv[], int argc);
+    void    init_mutex(t_table *table,int num_of_fill);
+    void    initialize_fills(int num_of_fill, t_filo *filo, t_table *table);
+
+
+
+
+
+
+
+
+
 
 #endif
