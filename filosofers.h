@@ -46,7 +46,7 @@
     void    *count_at_100(void *ptr);
     void    tread_init(t_table *table, char *argv[], int argc);
     void    init_mutex(t_table *table,int num_of_fill);
-    void    initialize_fills(int num_of_fill, t_filo *filo, t_table *table);
+    void    initialize_fills(int num_of_fill, t_filo *filo, t_table *table, char *argv[]);
 
 
 
