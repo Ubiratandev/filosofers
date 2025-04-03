@@ -1,6 +1,4 @@
-#include "filosofers.h"
-
-
+#include "philosophers.h"
 
 long	ft_atol(const char *nptr)
 {
@@ -43,14 +41,14 @@ int ft_is_digit(char *num)
     return(1);
 }
 
-int verify_args(char *argv[])
+int verify_args(char *argv[],int argc)
 {
     int i;
     int n;
 
     i = 0;
     n = 0;
-    while(i <= 5)
+    while(i <= argc)
     {
         n = ft_is_digit(argv[i++]);
         if(n == 0)
@@ -61,7 +59,7 @@ int verify_args(char *argv[])
 
 int verify_num_arg(t_table table, char  *argv[], int argc)
 {
-    if(table.fil_num < 0)
+    if(table.phil_num < 0)
         return(0);
     table.time_to_die = ft_atol(argv[2]) ;
     if(table.time_to_die < 0)
@@ -77,73 +75,74 @@ int verify_num_arg(t_table table, char  *argv[], int argc)
             return(0);
     return(1);
 }
-
-void    populate(t_table *table, char *argv[],int argc)
+//strating_args
+int    populate_table(t_table *table, char *argv[],int argc)
 {
-    if(verify_args(argv) == 1)
+
+    if(argc != 5 && argc != 6)
     {
-        return;
+        printf("argument invalid \n");
+        return(1);
     }
-    table->fil_num = ft_atoi(argv[1]);
+    if(verify_args(argv, argc))
+    {
+        return(1);
+    }
+    table->valid_table = 0;
+    table->phil_num = ft_atoi(argv[1]);
     table->time_to_die = ft_atol(argv[2]);
     table->time_to_eat = ft_atol(argv[3]);
     table->time_to_sleep = ft_atol(argv[4]);
     table->max_number_of_eat = -42;
     if(argc == 6)
         table->max_number_of_eat = ft_atoi(argv[5]);
-    table->fork = malloc(table->fil_num * sizeof(pthread_mutex_t));
-    table->filo = malloc(table->fil_num * sizeof(t_filo));
+    table->fork = malloc(table->phil_num * sizeof(pthread_mutex_t));
+    table->philo = malloc(table->phil_num * sizeof(t_philo));
+    return(0);
 }
 
-void    *count_at_100(void *ptr)
-{
-    t_filo *filo;
-
-    filo  =  (t_filo *)ptr;
-    int i;
-
-    i = 0;
-    while(i <= 10)
-    {
-        filo->remover_depois = i;
-        i++;
-        printf("%d \n", filo->remover_depois);
-    }
-    return (NULL);
-}
-
-void    tread_init(t_table *table, char *argv[], int argc)
+int    thread_init(t_table *table, char *argv[], int argc)
 {
     int i;
+    t_philo *philo;
 
+    if(initialize_phills(table, argv))
+        return(1);
+    philo = table->philo;
     i = 0;
-    populate(table, argv,argc);
-    while(i < table->fil_num)
+    pthread_create(&table->monitor, NULL, monitor, philo);
+    populate_table(table, argv,argc);
+    while(i < table->phil_num)
     {
     
-       pthread_mutex_lock(&table->filo[i].lock);
-       table->filo[i].time_of_last_meel = table->time_start;
-       pthread_mutex_unlock(&table->filo[i].lock);
-       pthread_create(&table->filo[i].tread, NULL, count_at_100, &table->filo[i]);
+       pthread_mutex_lock(&table->philo[i].lock);
+       table->philo[i].time_of_last_meel = table->time_start;
+       pthread_mutex_unlock(&table->philo[i].lock);
+       pthread_create(&philo[i].thread, NULL, dinner, &philo[i]);
+       //init the diner hereS
         i++;
     }
     i = 0;
-    while(i < table->fil_num)
+    while(i < table->phil_num)
     {
-        pthread_join(table->filo[i].tread, NULL);
+        pthread_join(table->philo[i].thread, NULL);
         i++;
     }
+    pthread_join(table->monitor, NULL);
+    return(0);
 }
 
 int main(int argc, char *argv[])
 {
-    t_filo filo;
+    t_philo philo;
     t_table table;
 
-    table.filo = &filo;
+    table.philo = &philo;
     if(argc < 5 && argc > 6 )
         return(1);
     if(verify_num_arg(table, argv, argc) == 0)
         return(1);
-    tread_init(&table, argv, argc);
+    thread_init(&table, argv, argc);
+    destroy_all(&table);
+    return(0);
  }

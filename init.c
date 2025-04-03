@@ -1,4 +1,4 @@
-#include "filosofers.h"
+#include "philosophers.h"
 
 int	ft_atoi(const char *nptr)
 {
@@ -26,32 +26,45 @@ int	ft_atoi(const char *nptr)
 	return (num * op);
 }
 
-void    init_mutex(t_table *table,int num_of_fill)
+int   init_mutex(t_table *table,int num_of_phill)
 {
     int i;
 
     i = 0;
-    while(i < num_of_fill)
+    while(i < num_of_phill)
         pthread_mutex_init(&table->fork[i],NULL);
     pthread_mutex_init(&table->print, NULL);
     pthread_mutex_init(&table->dead, NULL);
-    pthread_mutex_init(&table->wait_fil_pair_eat, NULL);
+    pthread_mutex_init(&table->wait_phil_pair_eat, NULL);
+	return(0);
 }
 
-void    initialize_fills(int num_of_fill, t_filo *filo, t_table *table, char *argv[])
+int   initialize_phills(t_table *table, char *argv[])
 {
     int i;
+	t_philo *philo;
 
+	philo = table->philo;
+
+	if(!table->philo || !table->fork)
+	{
+		(printf("malloc error /n"));
+		return(1);
+	}
+	if(init_mutex(table, table->phil_num))
+	return(1);
     i = 0;
-    init_mutex(table,num_of_fill);
-    while(i <= num_of_fill)
+    while(i <= table->phil_num)
     {
-        filo[i].id = i;
-        filo[i].meels = ft_atoi(argv[3]);
-        filo[i].left_fork = &table->fork[i];
-        filo[i].rigth_fork = &table->fork[(i + 1) % num_of_fill];
-        filo[i].table = table;
-        pthread_mutex_init(&table->filo[i].meel, NULL);
-        pthread_mutex_init(&table->filo[i].lock, NULL);
+        philo[i].id = i;
+        philo[i].meels = ft_atoi(argv[3]);
+        philo[i].left_fork = &table->fork[i];
+        philo[i].rigth_fork = &table->fork[(i + 1) % table->phil_num];
+        philo[i].table = table;
+        philo[i].time_of_last_meel = now();
+
+        pthread_mutex_init(&table->philo[i].meel, NULL);
+        pthread_mutex_init(&table->philo[i].lock, NULL);
     }
+	return(0);
 }
