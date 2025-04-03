@@ -121,9 +121,9 @@ void    tread_init(t_table *table, char *argv[], int argc)
     while(i < table->fil_num)
     {
     
-    //    pthread_mutex_lock(&table->filo[i].lock);
-    //    table->filo[i].time_of_last_meel = table->time_start;
-    //    pthread_mutex_unlock(&table->filo[i].lock);
+       pthread_mutex_lock(&table->filo[i].lock);
+       table->filo[i].time_of_last_meel = table->time_start;
+       pthread_mutex_unlock(&table->filo[i].lock);
        pthread_create(&table->filo[i].tread, NULL, count_at_100, &table->filo[i]);
         i++;
     }

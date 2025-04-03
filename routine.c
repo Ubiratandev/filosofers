@@ -32,16 +32,38 @@ void    filo_sleep(t_filo *filo)
 }
 void think(t_filo *filo)
 {
-    
+    long die;
+    long eat;
+    long sleep;
+    t_table *iot;
+
+    die = filo->table->time_to_die;
+    eat = filo->table->time_to_eat;
+    sleep = filo->table->time_to_sleep;
+    iot = filo->table;
+    if(filo->table->valid_table == 0)
+    {
+        phtread_mutex_lock(iot->print);
+        printf("printar que esta pensando");
+        phtriead_mutex_unlock(iot->print);
+        if(die - (eat + sleep) > 10)
+            usleep((die - (eat + sleep) * 1000) - 10000);
+
+    }
+
+
 }
 
-void    fil_sleep()
+void    fil_sleep(t_filo *filo)
 {
+    t_table *iot;
 
-}
-
-void    think()
-{
-    printf("oi");
-
+    iot = filo->table;
+    if(filo->table.valid_table == 0)
+    {
+        pthread_mutex_lock(iot->print);
+        printf("printar qie esta pensando");
+        pthread_mutex_unlock(iot->print);
+        usleep(filo->time_to_sleep * 1000);
+    }
 }
