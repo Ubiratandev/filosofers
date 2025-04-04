@@ -1,31 +1,39 @@
-#include "philosophers.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: natrodri <natrodri@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/24 10:32:17 by natrodri          #+#    #+#             */
+/*   Updated: 2025/03/24 10:32:18 by natrodri         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-long    now(void)
+#include "philo.h"
+
+long	now(void)
 {
-    //understand this struct
-    t_timeval time;
+	t_timeval	time;
 
-    gettimeofday(&time, NULL);
-    return(time.tv_sec * 1000 + time.tv_usec / 1000);
+	gettimeofday(&time, NULL);
+	return (time.tv_sec * 1000 + time.tv_usec / 1000);
 }
 
-void    destroy_all(t_table *table)
-{  
-    int i;
+void	clear(t_table *table)
+{
+	int	i;
 
-    i = 0;
-    while(i < table->phil_num)
-    {
-        pthread_mutex_destroy(&table->fork[i]);
-        pthread_mutex_destroy(&table->philo[i].lock);
-        pthread_mutex_destroy(&table->philo[i].meel);
-        i++;
-    }
-    pthread_mutex_destroy(&table->print);
-    pthread_mutex_destroy(&table->dead);
-    pthread_mutex_destroy(&table->wait_phil_pair_eat);
-    free(table->fork);
-    free(table->philo);
-
-
+	i = -1;
+	while (++i < table->philo_nbr)
+	{
+		pthread_mutex_destroy(&table->forks[i]);
+		pthread_mutex_destroy(&table->philos[i].lock);
+		pthread_mutex_destroy(&table->philos[i].meal);
+	}
+	pthread_mutex_destroy(&table->print);
+	pthread_mutex_destroy(&table->dead);
+	pthread_mutex_destroy(&table->wait);
+	free(table->forks);
+	free(table->philos);
 }

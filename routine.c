@@ -1,69 +1,93 @@
-#include "philosophers.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   routine.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: natrodri <natrodri@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/24 10:32:13 by natrodri          #+#    #+#             */
+/*   Updated: 2025/03/24 11:01:33 by natrodri         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-void    phil_eat(t_philo *philo)
+#include "philo.h"
+
+void	take_fork(t_philo *philo)
 {
-    pthread_mutex_lock(&philo->meel);
-    philo->meels--;
-    pthread_mutex_unlock(&philo->meel);
-    pthread_mutex_lock(&philo->table->print);
-    printf("printar que esta comendo \n");
-    pthread_mutex_unlock(&philo->table->print);
-    pthread_mutex_lock(&philo->lock);
-    philo->time_of_last_meel = now();
-    pthread_mutex_unlock(&philo->lock);
-    usleep(philo->table->time_to_eat * 1000);
-    pthread_mutex_unlock(philo->rigth_fork);
-    pthread_mutex_unlock(philo->left_fork);
+	t_table	*t;
 
-
-}
-void    philo_sleep(t_philo *philo)
-{
-    t_table *iot;
-
-    iot = philo->table;
-    if(!table_is_valid(philo->table))
-    {
-        pthread_mutex_lock(&iot->print);
-        printf("dizer que esta pensando \n");
-        pthread_mutex_unlock(&iot->print);
-        usleep(iot->time_to_sleep * 1000);
-    }
-}
-void think(t_philo *philo)
-{
-    long die;
-    long eat;
-    long sleep;
-    t_table *iot;
-
-    die = philo->table->time_to_die;
-    eat = philo->table->time_to_eat;
-    sleep = philo->table->time_to_sleep;
-    iot = philo->table;
-    if(!table_is_valid(philo->table))
-    {
-        pthread_mutex_lock(&iot->print);
-        printf("printar que esta pensando \n");
-        pthread_mutex_unlock(&iot->print);
-        if(die - (eat + sleep) > 10)
-            usleep((die - (eat + sleep) * 1000) - 10000);
-
-    }
-
-
+	t = philo->table;
+	if (philo->id % 2)
+	{
+		pthread_mutex_lock(philo->left_fork);
+		pthread_mutex_lock(&t->print);
+		printf("%ld %d has taken a fork\n", now() - t->tm_start, philo->id + 1);
+		pthread_mutex_unlock(&t->print);
+		pthread_mutex_lock(philo->right_fork);
+		pthread_mutex_lock(&t->print);
+		printf("%ld %d has taken a fork\n", now() - t->tm_start, philo->id + 1);
+		pthread_mutex_unlock(&t->print);
+	}
+	else
+	{
+		pthread_mutex_lock(philo->right_fork);
+		pthread_mutex_lock(&t->print);
+		printf("%ld %d has taken a fork\n", now() - t->tm_start, philo->id + 1);
+		pthread_mutex_unlock(&t->print);
+		pthread_mutex_lock(philo->left_fork);
+		pthread_mutex_lock(&t->print);
+		printf("%ld %d has taken a fork\n", now() - t->tm_start, philo->id + 1);
+		pthread_mutex_unlock(&t->print);
+	}
 }
 
-void    phil_sleep(t_philo *philo)
+void	eat(t_philo *philo)
 {
-    t_table *iot;
+	pthread_mutex_lock(&philo->meal);
+	philo->meals += 1;
+	pthread_mutex_unlock(&philo->meal);
+	pthread_mutex_lock(&philo->table->print);
+	printf("%ld %d is eating\n", now() - philo->table->tm_start, philo->id + 1);
+	pthread_mutex_unlock(&philo->table->print);
+	pthread_mutex_lock(&philo->lock);
+	philo->last_meal = now();
+	pthread_mutex_unlock(&philo->lock);
+	usleep(philo->table->time_eats * 1000);
+	pthread_mutex_unlock(philo->right_fork);
+	pthread_mutex_unlock(philo->left_fork);
+}
 
-    iot = philo->table;
-    if(philo->table->valid_table == 0)
-    {
-        pthread_mutex_lock(&iot->print);
-        printf("printar qie esta pensando \n");
-        pthread_mutex_unlock(&iot->print);
-        usleep(iot->time_to_sleep * 1000);
-    }
+void	philo_sleep(t_philo *philo)
+{
+	t_table	*t;
+
+	t = philo->table;
+	if (!has_dead(philo->table))
+	{
+		pthread_mutex_lock(&t->print);
+		printf("%ld %d is sleeping\n", now() - t->tm_start, philo->id + 1);
+		pthread_mutex_unlock(&t->print);
+		usleep(t->tm_sleep * 1000);
+	}
+}
+
+void	think(t_philo *philo)
+{
+	long	die;
+	long	eat;
+	long	sleep;
+	t_table	*t;
+
+	die = philo->table->time_die;
+	eat = philo->table->time_eats;
+	sleep = philo->table->tm_sleep;
+	t = philo->table;
+	if (!has_dead(philo->table))
+	{
+		pthread_mutex_lock(&t->print);
+		printf("%ld %d is thinking\n", now() - t->tm_start, philo->id + 1);
+		pthread_mutex_unlock(&t->print);
+		if (die - (eat + sleep) > 10)
+			usleep(((die - (eat + sleep)) * 1000) - 10000);
+	}
 }

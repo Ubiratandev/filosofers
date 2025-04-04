@@ -1,39 +1,23 @@
-NAME = philosophers
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -g 
-OBJS = philosophers.o fork.o init.o routine.o utils.o monitor.o philosophers_dinning.o
+CFLAGS = -Wall -Wextra -Werror
+NAME = philo
+
+SRC = dining.c main.c monitor_dead.c my_libft.c philo.c routine.c utils.c
+OBJ = $(SRC:.c=.o)
 
 all: $(NAME)
 
-$(NAME): $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -o $(NAME) 
+$(NAME): $(OBJ)
+	$(CC) $(CFLAGS) -o $(NAME) $(OBJ)
 
-philosophers.o: philosophers.c philosophers.h
-	$(CC) $(CFLAGS) -c philosophers.c -o philosophers.o
-
-fork.o: fork.c philosophers.h
-	$(CC) $(CFLAGS) -c fork.c -o fork.o
-
-init.o: init.c philosophers.h
-	$(CC) $(CFLAGS) -c init.c -o init.o
-
-routine.o: routine.c philosophers.h
-	$(CC) $(CFLAGS) -c routine.c -o routine.o
-
-utils.o: utils.c philosophers.h
-	$(CC) $(CFLAGS) -c utils.c -o utils.o
-
-monitor.o: monitor.c philosophers.h
-	$(CC) $(CFLAGS) -c monitor.c -o monitor.o
-
-philosophers_dinning.o: philosophers_dinning.c philosophers.h
-	$(CC) $(CFLAGS) -c philosophers_dinning.c -o philosophers_dinning.o
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	@rm -f $(OBJS)
+	rm -f $(OBJ)
 
 fclean: clean
-	@rm -f $(NAME)
+	rm -f $(NAME)
 
 re: fclean all
 
