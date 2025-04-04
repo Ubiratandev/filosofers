@@ -1,6 +1,6 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror
-NAME = philosopher
+CFLAGS = -Wall -Wextra -Werror -g
+NAME = philo
 
 SRC = dining.c main.c monitor_dead.c philosopher.c routine.c utils.c
 OBJ = $(SRC:.c=.o)
@@ -10,7 +10,7 @@ all: $(NAME)
 $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJ)
 
-%.o: %.c
+.o: .c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
