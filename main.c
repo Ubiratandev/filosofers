@@ -1,7 +1,7 @@
 
-#include "philo.h"
+#include "philosopher.h"
 
-int	check_digits(char *av)
+int	check_args(char *av)
 {
 	int	i;
 
@@ -23,7 +23,7 @@ int	check_digits(char *av)
 	return (0);
 }
 
-int	streating_args(int ac, char **av, t_table *table)
+int	init_table(int ac, char **av, t_table *table)
 {
 	int	i;
 
@@ -35,19 +35,19 @@ int	streating_args(int ac, char **av, t_table *table)
 	}
 	while (++i < ac)
 	{
-		if (check_digits(av[i]))
+		if (check_args(av[i]))
 			return (1);
 	}
 	table->has_dead = 0;
 	table->num_eats = -42;
-	table->philo_nbr = ft_atoi(av[1]);
+	table->philo_num = ft_atoi(av[1]);
 	table->time_die = ft_atol(av[2]);
 	table->time_eats = ft_atol(av[3]);
 	table->tm_sleep = ft_atol(av[4]);
 	if (ac == 6)
 		table->num_eats = ft_atoi(av[5]);
-	table->forks = malloc(table->philo_nbr * sizeof(t_mtx));
-	table->philos = malloc(table->philo_nbr * sizeof(t_philo));
+	table->forks = malloc(table->philo_num * sizeof(p_mut_t));
+	table->philos = malloc(table->philo_num * sizeof(t_philosopher));
 	return (0);
 }
 
@@ -55,7 +55,7 @@ int	main(int ac, char **av)
 {
 	t_table	table;
 
-	if (streating_args(ac, av, &table))
+	if (init_table(ac, av, &table))
 		return (1);
 	if (starting_thread(&table))
 		return (1);

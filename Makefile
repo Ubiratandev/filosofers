@@ -1,8 +1,8 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror
-NAME = philo
+NAME = philosopher
 
-SRC = dining.c main.c monitor_dead.c my_libft.c philo.c routine.c utils.c
+SRC = dining.c main.c monitor_dead.c philosopher.c routine.c utils.c
 OBJ = $(SRC:.c=.o)
 
 all: $(NAME)

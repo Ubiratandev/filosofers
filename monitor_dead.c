@@ -1,6 +1,6 @@
 
 
-#include "philo.h"
+#include "philosopher.h"
 
 int	has_dead(t_table *table)
 {
@@ -12,7 +12,7 @@ int	has_dead(t_table *table)
 	return (status);
 }
 
-void	check_dead(t_philo *philo)
+void	check_dead(t_philosopher *philo)
 {
 	long	time;
 
@@ -24,13 +24,13 @@ void	check_dead(t_philo *philo)
 	if (time > philo->table->time_die)
 	{
 		pthread_mutex_lock(&philo->table->dead);
-		printf("%ld %d is died\n", now() - philo->table->tm_start, philo->id);
+		printf("%ld %d is died\n", now() - philo->table->tm_start, philo->philo_id);
 		philo->table->has_dead = 1;
 		pthread_mutex_unlock(&philo->table->dead);
 	}
 }
 
-int	get_meal(t_philo *philo)
+int	get_meal(t_philosopher *philo)
 {
 	int	meal;
 
@@ -44,16 +44,16 @@ int	get_meal(t_philo *philo)
 void	*monitor(void *arg)
 {
 	int		i;
-	t_philo	*philo;
+	t_philosopher	*philo;
 	t_table	*t;
 
 	i = 0;
-	philo = (t_philo *)arg;
+	philo = (t_philosopher *)arg;
 	t = philo->table;
 	while (!has_dead(t) && get_meal(&t->philos[i]) != t->num_eats)
 	{
 		check_dead(&philo->table->philos[i]);
-		i = (i + 1) % philo->table->philo_nbr;
+		i = (i + 1) % philo->table->philo_num;
 		usleep(600);
 	}
 	return (NULL);

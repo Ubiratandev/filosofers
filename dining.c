@@ -1,28 +1,28 @@
 
 
-#include "philo.h"
+#include "philosopher.h"
 
-void	dinner_one(t_philo *philo)
+void	first_eat(t_philosopher *philo)
 {
 	long	start;
 
 	start = philo->table->tm_start;
 	pthread_mutex_lock(philo->left_fork);
-	printf("%ld %d has taken a fork\n", now() - start, philo->id);
+	printf("%ld %d has taken a fork\n", now() - start, philo->philo_id);
 	pthread_mutex_unlock(philo->left_fork);
 }
 
-void	*dinner(void *arg)
+void	*all_eat(void *arg)
 {
-	t_philo	*philo;
+	t_philosopher	*philo;
 
-	philo = (t_philo *)arg;
-	if (philo->table->philo_nbr == 1)
+	philo = (t_philosopher *)arg;
+	if (philo->table->philo_num == 1)
 	{
-		dinner_one (philo);
+		first_eat (philo);
 		return (NULL);
 	}
-	if (philo->id % 2 == 0)
+	if (philo->philo_id % 2 == 0)
 		usleep(600);
 	while (!has_dead(philo->table) && get_meal(philo) != philo->table->num_eats)
 	{
@@ -32,4 +32,33 @@ void	*dinner(void *arg)
 		think(philo);
 	}
 	return (NULL);
+}
+
+void	take_fork(t_philosopher *philo)
+{
+	t_table	*t;
+
+	t = philo->table;
+	if (philo->philo_id % 2)
+	{
+		pthread_mutex_lock(philo->left_fork);
+		pthread_mutex_lock(&t->print);
+		printf("%ld %d has taken a fork\n", now() - t->tm_start, philo->philo_id + 1);
+		pthread_mutex_unlock(&t->print);
+		pthread_mutex_lock(philo->right_fork);
+		pthread_mutex_lock(&t->print);
+		printf("%ld %d has taken a fork\n", now() - t->tm_start, philo->philo_id + 1);
+		pthread_mutex_unlock(&t->print);
+	}
+	else
+	{
+		pthread_mutex_lock(philo->right_fork);
+		pthread_mutex_lock(&t->print);
+		printf("%ld %d has taken a fork\n", now() - t->tm_start, philo->philo_id + 1);
+		pthread_mutex_unlock(&t->print);
+		pthread_mutex_lock(philo->left_fork);
+		pthread_mutex_lock(&t->print);
+		printf("%ld %d has taken a fork\n", now() - t->tm_start, philo->philo_id + 1);
+		pthread_mutex_unlock(&t->print);
+	}
 }
