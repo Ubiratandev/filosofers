@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: uviana-b <uviana-b@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/04 12:49:27 by uviana-b          #+#    #+#             */
+/*   Updated: 2025/04/04 13:03:16 by uviana-b         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "philosopher.h"
 
@@ -30,7 +41,7 @@ int	init_table(int ac, char **av, t_table *table)
 	i = 0;
 	if (ac != 5 && ac != 6)
 	{
-		printf ("argument invalid'\n");
+		printf("argument invalid'\n");
 		return (1);
 	}
 	while (++i < ac)
@@ -46,7 +57,7 @@ int	init_table(int ac, char **av, t_table *table)
 	table->tm_sleep = ft_atol(av[4]);
 	if (ac == 6)
 		table->num_eats = ft_atoi(av[5]);
-	table->forks = malloc(table->philo_num * sizeof(p_mut_t));
+	table->forks = malloc(table->philo_num * sizeof(t_mut_t));
 	table->philos = malloc(table->philo_num * sizeof(t_philosopher));
 	return (0);
 }

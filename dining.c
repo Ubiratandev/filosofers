@@ -1,4 +1,14 @@
-
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   dining.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: uviana-b <uviana-b@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/04 12:49:11 by uviana-b          #+#    #+#             */
+/*   Updated: 2025/04/04 13:01:58 by uviana-b         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "philosopher.h"
 
@@ -19,7 +29,7 @@ void	*all_eat(void *arg)
 	philo = (t_philosopher *)arg;
 	if (philo->table->philo_num == 1)
 	{
-		first_eat (philo);
+		first_eat(philo);
 		return (NULL);
 	}
 	if (philo->philo_id % 2 == 0)
@@ -34,6 +44,23 @@ void	*all_eat(void *arg)
 	return (NULL);
 }
 
+static void	take_fork_aux(t_philosopher *philo)
+{
+	t_table	*t;
+
+	t = philo->table;
+	pthread_mutex_lock(philo->right_fork);
+	pthread_mutex_lock(&t->print);
+	printf("%ld %d has taken a fork\n", now() - t->tm_start, philo->philo_id
+		+ 1);
+	pthread_mutex_unlock(&t->print);
+	pthread_mutex_lock(philo->left_fork);
+	pthread_mutex_lock(&t->print);
+	printf("%ld %d has taken a fork\n", now() - t->tm_start, philo->philo_id
+		+ 1);
+	pthread_mutex_unlock(&t->print);
+}
+
 void	take_fork(t_philosopher *philo)
 {
 	t_table	*t;
@@ -43,22 +70,15 @@ void	take_fork(t_philosopher *philo)
 	{
 		pthread_mutex_lock(philo->left_fork);
 		pthread_mutex_lock(&t->print);
-		printf("%ld %d has taken a fork\n", now() - t->tm_start, philo->philo_id + 1);
+		printf("%ld %d has taken a fork\n", now() - t->tm_start, philo->philo_id
+			+ 1);
 		pthread_mutex_unlock(&t->print);
 		pthread_mutex_lock(philo->right_fork);
 		pthread_mutex_lock(&t->print);
-		printf("%ld %d has taken a fork\n", now() - t->tm_start, philo->philo_id + 1);
+		printf("%ld %d has taken a fork\n", now() - t->tm_start, philo->philo_id
+			+ 1);
 		pthread_mutex_unlock(&t->print);
 	}
 	else
-	{
-		pthread_mutex_lock(philo->right_fork);
-		pthread_mutex_lock(&t->print);
-		printf("%ld %d has taken a fork\n", now() - t->tm_start, philo->philo_id + 1);
-		pthread_mutex_unlock(&t->print);
-		pthread_mutex_lock(philo->left_fork);
-		pthread_mutex_lock(&t->print);
-		printf("%ld %d has taken a fork\n", now() - t->tm_start, philo->philo_id + 1);
-		pthread_mutex_unlock(&t->print);
-	}
+		take_fork_aux(philo);
 }

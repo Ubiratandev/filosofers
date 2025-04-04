@@ -1,4 +1,14 @@
-
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philosopher.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: uviana-b <uviana-b@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/04 12:50:16 by uviana-b          #+#    #+#             */
+/*   Updated: 2025/04/04 12:51:20 by uviana-b         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "philosopher.h"
 
@@ -15,9 +25,8 @@ int	init_mutex(t_table *t)
 			return (1);
 		}
 	}
-	if (pthread_mutex_init(&t->print, NULL)
-		|| pthread_mutex_init(&t->dead, NULL)
-		|| pthread_mutex_init(&t->wait, NULL))
+	if (pthread_mutex_init(&t->print, NULL) || pthread_mutex_init(&t->dead,
+			NULL) || pthread_mutex_init(&t->wait, NULL))
 	{
 		printf("Error: mutex init\n");
 		return (1);
@@ -53,7 +62,7 @@ int	init_philos(t_table *table)
 
 int	starting_thread(t_table *table)
 {
-	int		i;
+	int				i;
 	t_philosopher	*philos;
 
 	if (init_philos(table))

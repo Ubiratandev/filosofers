@@ -1,4 +1,14 @@
-
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   monitor_dead.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: uviana-b <uviana-b@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/04 12:49:56 by uviana-b          #+#    #+#             */
+/*   Updated: 2025/04/04 12:51:14 by uviana-b         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "philosopher.h"
 
@@ -24,7 +34,8 @@ void	check_dead(t_philosopher *philo)
 	if (time > philo->table->time_die)
 	{
 		pthread_mutex_lock(&philo->table->dead);
-		printf("%ld %d is died\n", now() - philo->table->tm_start, philo->philo_id);
+		printf("%ld %d is died\n", now() - philo->table->tm_start,
+			philo->philo_id);
 		philo->table->has_dead = 1;
 		pthread_mutex_unlock(&philo->table->dead);
 	}
@@ -43,9 +54,9 @@ int	get_meal(t_philosopher *philo)
 
 void	*monitor(void *arg)
 {
-	int		i;
+	int				i;
 	t_philosopher	*philo;
-	t_table	*t;
+	t_table			*t;
 
 	i = 0;
 	philo = (t_philosopher *)arg;

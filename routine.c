@@ -1,4 +1,14 @@
-
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   routine.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: uviana-b <uviana-b@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/04 12:50:36 by uviana-b          #+#    #+#             */
+/*   Updated: 2025/04/04 12:51:26 by uviana-b         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "philosopher.h"
 
@@ -8,7 +18,8 @@ void	eat(t_philosopher *philo)
 	philo->meals += 1;
 	pthread_mutex_unlock(&philo->meal);
 	pthread_mutex_lock(&philo->table->print);
-	printf("%ld %d is eating\n", now() - philo->table->tm_start, philo->philo_id + 1);
+	printf("%ld %d is eating\n", now() - philo->table->tm_start, philo->philo_id
+		+ 1);
 	pthread_mutex_unlock(&philo->table->print);
 	pthread_mutex_lock(&philo->lock);
 	philo->last_meal = now();
@@ -26,7 +37,8 @@ void	philo_sleep(t_philosopher *philo)
 	if (!has_dead(philo->table))
 	{
 		pthread_mutex_lock(&t->print);
-		printf("%ld %d is sleeping\n", now() - t->tm_start, philo->philo_id + 1);
+		printf("%ld %d is sleeping\n", now() - t->tm_start, philo->philo_id
+			+ 1);
 		pthread_mutex_unlock(&t->print);
 		usleep(t->tm_sleep * 1000);
 	}
@@ -46,7 +58,8 @@ void	think(t_philosopher *philo)
 	if (!has_dead(philo->table))
 	{
 		pthread_mutex_lock(&t->print);
-		printf("%ld %d is thinking\n", now() - t->tm_start, philo->philo_id + 1);
+		printf("%ld %d is thinking\n", now() - t->tm_start, philo->philo_id
+			+ 1);
 		pthread_mutex_unlock(&t->print);
 		if (die - (eat + sleep) > 10)
 			usleep(((die - (eat + sleep)) * 1000) - 10000);
